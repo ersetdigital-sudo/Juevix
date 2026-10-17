@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nexa Store — PPOB: Bayar Tagihan, Pulsa &amp; Token PLN Instan</title>
+<style>html,body{overflow-x:hidden;max-width:100%}
+:root{--bg:#0b0b0f;--panel:#14141b;--panel2:#1c1c26;--line:#2a2a36;--ink:#f5f5f5;--mut:#9a9aa8;--or:#FF7A00;--or2:#FFA64D}
+body{overflow-x:hidden;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}
+h1,h2,h3,.hd{font-family:"Plus Jakarta Sans",sans-serif}
+.btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--or);color:#fff;font-weight:800;border-radius:12px;padding:.85rem 1.4rem;transition:.2s}
+.btn:hover{background:var(--or2);transform:translateY(-1px)}
+.ghost{border:1px solid var(--line);border-radius:12px;padding:.85rem 1.4rem;font-weight:700;color:var(--ink)}
+.ghost:hover{border-color:var(--or)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px}
+.grid-bg{background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse at 70% 30%,#000 10%,transparent 70%)}
+.glow{background:radial-gradient(circle,rgba(255,122,0,.35),transparent 65%)}
+.tab{padding:.55rem 1.1rem;border-radius:999px;border:1px solid var(--line);color:var(--mut);font-weight:600;font-size:.9rem;white-space:nowrap}
+.tab.on{background:var(--or);color:#fff;border-color:var(--or)}
+.prod{transition:.2s;cursor:pointer}
+.prod:hover{border-color:var(--or);transform:translateY(-4px)}
+.tile{aspect-ratio:1;border-radius:16px;display:grid;place-items:center;font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;font-size:1.3rem}
+.nom{border:1px solid var(--line);border-radius:12px;padding:.8rem;text-align:left;cursor:pointer}
+.nom.on{border-color:var(--or);background:rgba(255,122,0,.1)}
+.marq{display:flex;gap:3rem;animation:m 28s linear infinite;width:max-content}
+@keyframes m{to{transform:translateX(-50%)}}
+details summary{list-style:none;cursor:pointer}
+details summary::-webkit-details-marker{display:none}
+details[open] .pl{transform:rotate(45deg)}
+.cekwrap{grid-template-columns:minmax(0,1fr);width:100%}.cekwrap>*{min-width:0;max-width:100%}@media(min-width:1024px){.cekwrap{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ico3d{position:relative;display:block;overflow:visible;width:78%;height:auto;aspect-ratio:1/1;min-width:56px;min-height:56px;margin:auto;filter:drop-shadow(0 14px 18px rgba(0,0,0,.45));transition:transform .35s}.prod:hover .ico3d{transform:translateY(-6px) scale(1.06) rotate(-4deg)}@keyframes fl{50%{transform:translateY(-6px)}}.flo{animation:fl 3s ease-in-out infinite}
+.ico3d .sp{position:absolute;inset:0;overflow:hidden}.ico3d img{position:absolute;width:400%;height:200%;max-width:none}
+</style>
+<script src="https://cdn.moda.app/runtime-libs/tailwind-browser-4.1.13-index.global.min.js"></script><style data-moda-export-fonts="true">@font-face { font-family: 'Inter'; src: url("../fonts/inter_24pt-thin.ttf") format("truetype"); font-style: normal; font-weight: 100; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../fonts/inter_24pt-thinitalic.ttf") format("truetype"); font-style: italic; font-weight: 100; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../fonts/inter_24pt-extralight.ttf") format("truetype"); font-style: normal; font-weight: 200; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../fonts/inter_24pt-extralightitalic.ttf") format("truetype"); font-style: italic; font-weight: 200; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../fonts/inter_24pt-light.ttf") format("truetype"); font-style: normal; font-weight: 300; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../fonts/inter_24pt-lightitalic.ttf") format("truetype"); font-style: italic; font-weight: 300; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../fonts/inter_24pt-regular.ttf") format("truetype"); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../fonts/inter_24pt-italic.ttf") format("truetype"); font-style: italic; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../fonts/inter_24pt-medium.ttf") format("truetype"); font-style: normal; font-weight: 500; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../fonts/inter_24pt-mediumitalic.ttf") format("truetype"); font-style: italic; font-weight: 500; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../fonts/inter_24pt-semibold.ttf") format("truetype"); font-style: normal; font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../fonts/inter_24pt-semibolditalic.ttf") format("truetype"); font-style: italic; font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../fonts/inter_24pt-bold.ttf") format("truetype"); font-style: normal; font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../fonts/inter_24pt-bolditalic.ttf") format("truetype"); font-style: italic; font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../fonts/inter_24pt-extrabold.ttf") format("truetype"); font-style: normal; font-weight: 800; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../fonts/inter_24pt-extrabolditalic.ttf") format("truetype"); font-style: italic; font-weight: 800; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../fonts/inter_24pt-black.ttf") format("truetype"); font-style: normal; font-weight: 900; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../fonts/inter_24pt-blackitalic.ttf") format("truetype"); font-style: italic; font-weight: 900; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../fonts/plusjakartasans-extralight.ttf") format("truetype"); font-style: normal; font-weight: 200; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../fonts/plusjakartasans-extralightitalic.ttf") format("truetype"); font-style: italic; font-weight: 200; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../fonts/plusjakartasans-light.ttf") format("truetype"); font-style: normal; font-weight: 300; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../fonts/plusjakartasans-lightitalic.ttf") format("truetype"); font-style: italic; font-weight: 300; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../fonts/plusjakartasans-regular.ttf") format("truetype"); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../fonts/plusjakartasans-italic.ttf") format("truetype"); font-style: italic; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../fonts/plusjakartasans-medium.ttf") format("truetype"); font-style: normal; font-weight: 500; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../fonts/plusjakartasans-mediumitalic.ttf") format("truetype"); font-style: italic; font-weight: 500; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../fonts/plusjakartasans-semibold.ttf") format("truetype"); font-style: normal; font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../fonts/plusjakartasans-semibolditalic.ttf") format("truetype"); font-style: italic; font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../fonts/plusjakartasans-bold.ttf") format("truetype"); font-style: normal; font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../fonts/plusjakartasans-bolditalic.ttf") format("truetype"); font-style: italic; font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../fonts/plusjakartasans-extrabold.ttf") format("truetype"); font-style: normal; font-weight: 800; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../fonts/plusjakartasans-extrabolditalic.ttf") format("truetype"); font-style: italic; font-weight: 800; font-display: swap; }</style></head>
+<body><img id="sprsrc" src="../images/94d6dcf0-d906-4125-bbea-6601ff05d002.png" alt="" style="display:none">
+<!-- NAV -->
+<header class="sticky top-0 z-40 border-b border-[#2a2a36] bg-[#0b0b0f]/85 backdrop-blur">
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
+    <a href="/#" class="flex items-center gap-2"><img src="../images/9633b1bb-7934-4f2a-9517-419b0b3f68bc.png" alt="Nexa" class="h-7"><span class="hd rounded-md bg-[#FF7A00] px-2 py-0.5 text-xs font-extrabold text-white">STORE</span></a>
+    <nav class="hidden gap-8 text-sm font-semibold text-[#9a9aa8] md:flex">
+      <a href="/pln" class="hover:text-white">PLN</a><a href="/pulsa" class="hover:text-white">Pulsa</a><a href="/bpjs" class="hover:text-white">BPJS</a><a href="/pdam" class="hover:text-white">PDAM</a><a href="/#flash" class="hover:text-white">Flash Sale</a><a href="/#cara" class="hover:text-white">Cara Order</a><a href="/#faq" class="hover:text-white">FAQ</a>
+    </nav>
+    <a href="/#produk" class="btn !py-2.5 text-sm whitespace-nowrap">Bayar</a>
+  </div>
+</header>
+
+<!-- HERO: split bento -->
+<section class="relative overflow-hidden">
+  <div class="grid-bg absolute inset-0"></div>
+  <div class="glow absolute -right-40 -top-40 h-[600px] w-[600px]"></div>
+  <div class="relative mx-auto grid max-w-7xl gap-6 px-5 py-16 lg:grid-cols-12 lg:py-24">
+    <div class="lg:col-span-7">
+      <p class="mb-5 text-sm font-semibold uppercase tracking-[.2em] text-[#FF7A00]">Pembayaran Online Serba Ada</p>
+      <h1 class="text-5xl font-extrabold leading-[1.05] md:text-7xl">Semua tagihan,<br><span class="text-[#FF7A00]">beres dalam</span> satu tempat.</h1>
+      <p class="mt-6 max-w-xl text-lg text-[#9a9aa8]">Token PLN, pulsa, paket data, BPJS, PDAM, internet, sampai cicilan. Proses otomatis dalam hitungan detik, buka 24 jam, admin paling hemat.</p>
+      <div class="mt-8 flex flex-wrap gap-3"><a href="/#produk" class="btn">Bayar Tagihan →</a><a href="/#cek" class="ghost">Cek Pesanan</a></div>
+      <div class="mt-12 grid max-w-lg grid-cols-3 gap-6 border-t border-[#2a2a36] pt-6">
+        <div><p class="hd text-3xl font-extrabold">2jt+</p><p class="text-sm text-[#9a9aa8]">Transaksi sukses</p></div>
+        <div><p class="hd text-3xl font-extrabold">3 dtk</p><p class="text-sm text-[#9a9aa8]">Rata-rata proses</p></div>
+        <div><p class="hd text-3xl font-extrabold">4.9★</p><p class="text-sm text-[#9a9aa8]">Rating pelanggan</p></div>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-4 lg:col-span-5">
+      <div class="panel col-span-2 p-6">
+        <div class="flex items-center justify-between"><span class="text-sm text-[#9a9aa8]">Transaksi terbaru</span><span class="flex items-center gap-2 text-xs text-green-400"><span class="h-2 w-2 animate-pulse rounded-full bg-green-400"></span>Live</span></div>
+        <ul id="live" class="mt-4 space-y-3 text-sm"></ul>
+      </div>
+      <div class="rounded-[20px] bg-[#FF7A00] p-6 text-white"><p class="text-sm font-bold">Cashback</p><p class="hd mt-2 text-4xl font-extrabold">5%</p><p class="mt-1 text-sm">Kode: NEXAPAY</p></div>
+      <div class="panel p-6"><p class="text-sm text-[#9a9aa8]">Pembayaran</p><p class="hd mt-2 text-2xl font-extrabold">QRIS, VA &amp; E-Wallet</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- marquee -->
+<div class="overflow-hidden border-y border-[#2a2a36] bg-[#14141b] py-4">
+  <div class="marq hd text-lg font-bold text-[#9a9aa8]">
+    <span>TOKEN PLN</span><span class="text-[#FF7A00]">✦</span><span>PULSA &amp; DATA</span><span class="text-[#FF7A00]">✦</span><span>BPJS KESEHATAN</span><span class="text-[#FF7A00]">✦</span><span>PDAM</span><span class="text-[#FF7A00]">✦</span><span>INTERNET &amp; TV</span><span class="text-[#FF7A00]">✦</span><span>E-WALLET</span><span class="text-[#FF7A00]">✦</span>
+    <span>TOKEN PLN</span><span class="text-[#FF7A00]">✦</span><span>PULSA &amp; DATA</span><span class="text-[#FF7A00]">✦</span><span>BPJS KESEHATAN</span><span class="text-[#FF7A00]">✦</span><span>PDAM</span><span class="text-[#FF7A00]">✦</span><span>INTERNET &amp; TV</span><span class="text-[#FF7A00]">✦</span><span>E-WALLET</span><span class="text-[#FF7A00]">✦</span>
+  </div>
+</div>
+
+<!-- FLASH SALE -->
+<section id="flash" class="mx-auto max-w-7xl px-5 pt-20">
+  <div class="panel flex flex-col gap-6 overflow-hidden p-8 md:flex-row md:items-center md:justify-between">
+    <div><h2 class="text-3xl font-extrabold md:text-4xl">⚡ Promo admin Rp0 berakhir dalam</h2><p class="mt-2 text-[#9a9aa8]">Bebas biaya admin untuk tagihan PLN, PDAM &amp; BPJS.</p></div>
+    <div id="cd" class="hd flex gap-3 text-center"></div>
+  </div>
+</section>
+
+<!-- PRODUK -->
+<section id="produk" class="mx-auto max-w-7xl px-5 py-20">
+  <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+    <div><p class="text-sm font-semibold uppercase tracking-[.2em] text-[#FF7A00]">8 Kategori Layanan</p><h2 class="mt-2 text-4xl font-extrabold">Mau bayar apa hari ini?</h2></div>
+    <input id="q" placeholder="Cari layanan, mis. PLN…" class="w-full rounded-xl border border-[#2a2a36] bg-[#14141b] px-4 py-3 text-sm outline-none focus:border-[#FF7A00] md:w-80">
+  </div>
+  <div id="tabs" class="mt-8 flex flex-wrap gap-2 pb-2"></div>
+  <div id="grid" class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"></div>
+</section>
+
+<!-- CARA ORDER: horizontal numbered -->
+<section id="cara" class="border-y border-[#2a2a36] bg-[#14141b]">
+  <div class="mx-auto max-w-7xl px-5 py-20">
+    <h2 class="max-w-xl text-4xl font-extrabold">Cuma 4 langkah, tagihan langsung lunas.</h2>
+    <div class="mt-12 grid gap-px overflow-hidden rounded-2xl border border-[#2a2a36] bg-[#2a2a36] md:grid-cols-4">
+      <div class="bg-[#0b0b0f] p-7"><p class="hd text-5xl font-extrabold text-[#FF7A00]">01</p><h3 class="mt-6 text-lg font-bold">Pilih layanan</h3><p class="mt-2 text-sm text-[#9a9aa8]">PLN, pulsa, BPJS, PDAM, atau layanan lain.</p></div>
+      <div class="bg-[#0b0b0f] p-7"><p class="hd text-5xl font-extrabold text-[#FF7A00]">02</p><h3 class="mt-6 text-lg font-bold">Masukkan nomor</h3><p class="mt-2 text-sm text-[#9a9aa8]">Isi ID pelanggan / nomor HP, tagihan dicek otomatis.</p></div>
+      <div class="bg-[#0b0b0f] p-7"><p class="hd text-5xl font-extrabold text-[#FF7A00]">03</p><h3 class="mt-6 text-lg font-bold">Bayar</h3><p class="mt-2 text-sm text-[#9a9aa8]">QRIS, transfer VA, DANA, OVO, GoPay, ShopeePay.</p></div>
+      <div class="bg-[#0b0b0f] p-7"><p class="hd text-5xl font-extrabold text-[#FF7A00]">04</p><h3 class="mt-6 text-lg font-bold">Selesai</h3><p class="mt-2 text-sm text-[#9a9aa8]">Token/struk terbit otomatis, dikirim via WhatsApp.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CEK + TESTI -->
+<section class="cekwrap mx-auto grid max-w-7xl gap-6 px-5 py-20">
+  <div id="cek" class="panel min-w-0 p-6 sm:p-8">
+    <h2 class="text-3xl font-extrabold">Cek status pesanan</h2>
+    <p class="mt-2 text-[#9a9aa8]">Masukkan nomor invoice dari email / WhatsApp.</p>
+    <form id="cekf" class="mt-6" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.5rem"><input required="" placeholder="NXS-XXXXXX" size="1" class="w-full min-w-0 flex-1 rounded-xl border border-[#2a2a36] bg-[#0b0b0f] px-4 py-3 outline-none focus:border-[#FF7A00]"><button class="btn">Cek</button></form>
+    <p id="cekr" class="mt-4 text-sm text-[#9a9aa8]"></p>
+  </div>
+  <div class="grid gap-4">
+    <div class="panel p-6"><p class="text-[#FF7A00]">★★★★★</p><p class="mt-3">"Beli token listrik jam 11 malam, 5 detik langsung keluar. Adminnya lebih murah dari minimarket!"</p><p class="mt-3 text-sm text-[#9a9aa8]">Raka, Bandung</p></div>
+    <div class="panel p-6"><p class="text-[#FF7A00]">★★★★★</p><p class="mt-3">"Bayar BPJS sama PDAM sekalian di sini, struknya rapi dan CS fast respon."</p><p class="mt-3 text-sm text-[#9a9aa8]">Dinda, Surabaya</p></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="mx-auto max-w-3xl px-5 pb-20">
+  <h2 class="text-center text-4xl font-extrabold">Pertanyaan umum</h2>
+  <div class="mt-10 divide-y divide-[#2a2a36] border-y border-[#2a2a36]">
+    <details class="py-5"><summary class="flex justify-between font-semibold">Berapa lama proses pembayaran?<span class="pl text-[#FF7A00] transition">+</span></summary><p class="mt-3 text-[#9a9aa8]">Umumnya 1–10 detik. Token PLN &amp; struk tagihan langsung terbit.</p></details>
+    <details class="py-5"><summary class="flex justify-between font-semibold">Apakah harus daftar akun?<span class="pl text-[#FF7A00] transition">+</span></summary><p class="mt-3 text-[#9a9aa8]">Tidak. Cukup isi ID pelanggan dan nomor WhatsApp untuk bukti transaksi.</p></details>
+    <details class="py-5"><summary class="flex justify-between font-semibold">Bagaimana jika salah input nomor?<span class="pl text-[#FF7A00] transition">+</span></summary><p class="mt-3 text-[#9a9aa8]">Segera hubungi CS kami. Transaksi yang sudah terkirim ke ID yang salah tidak dapat dibatalkan.</p></details>
+    <details class="py-5"><summary class="flex justify-between font-semibold">Metode pembayaran apa saja?<span class="pl text-[#FF7A00] transition">+</span></summary><p class="mt-3 text-[#9a9aa8]">QRIS, Virtual Account semua bank, DANA, OVO, GoPay, ShopeePay, dan minimarket.</p></details>
+  </div>
+</section>
+
+<!-- CTA + FOOTER -->
+<footer class="border-t border-[#2a2a36]">
+  <div class="mx-auto max-w-7xl px-5 py-16">
+    <div class="flex flex-col items-start justify-between gap-6 rounded-3xl bg-[#FF7A00] p-10 text-white md:flex-row md:items-center">
+      <h2 class="text-3xl font-extrabold md:text-4xl">Bayar tagihan sekarang, tanpa antre.</h2>
+      <a href="/#produk" class="rounded-xl bg-black px-6 py-4 font-bold text-white">Mulai Bayar →</a>
+    </div>
+    <div class="mt-14 flex flex-col justify-between gap-6 text-sm text-[#9a9aa8] md:flex-row">
+      <div class="flex items-center gap-2"><img src="../images/9633b1bb-7934-4f2a-9517-419b0b3f68bc.png" alt="Nexa" class="h-6"><span>Store © 2026. Semua hak dilindungi.</span></div>
+      <div class="flex gap-6"><a href="/#faq" class="hover:text-white">Bantuan</a><a href="/#" class="hover:text-white">Syarat &amp; Ketentuan</a><a href="/#" class="hover:text-white">Kebijakan Privasi</a></div>
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div id="modal" class="fixed inset-0 z-50 hidden items-end justify-center bg-black/70 p-4 backdrop-blur-sm sm:items-center">
+  <div class="panel max-h-[90vh] w-full max-w-lg overflow-y-auto p-6">
+    <div class="flex items-center justify-between"><h3 id="mt" class="text-2xl font-extrabold"></h3><button id="mx" class="text-2xl text-[#9a9aa8]">×</button></div>
+    <label class="mt-5 block text-sm text-[#9a9aa8]">ID Pelanggan / Nomor HP</label>
+    <input id="uid" class="mt-2 w-full rounded-xl border border-[#2a2a36] bg-[#0b0b0f] px-4 py-3 outline-none focus:border-[#FF7A00]" placeholder="Contoh: 532110987654">
+    <p class="mt-5 text-sm text-[#9a9aa8]">Pilih nominal</p>
+    <div id="noms" class="mt-2 grid grid-cols-2 gap-2"></div>
+    <div class="mt-6 flex items-center justify-between border-t border-[#2a2a36] pt-5"><span class="text-[#9a9aa8]">Total</span><span id="tot" class="hd text-2xl font-extrabold text-[#FF7A00]">-</span></div>
+    <button id="pay" class="btn mt-5 w-full justify-center">Lanjut Bayar</button>
+    <p id="msg" class="mt-3 text-center text-sm text-green-400"></p>
+  </div>
+</div>
+
+<script>var SPR=document.getElementById("sprsrc").src;
+const IC={"zap":'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>', "phone":'<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/>', "wifi":'<path d="M2 9a15 15 0 0 1 20 0M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0"/><circle cx="12" cy="20" r="1"/>', "drop":'<path d="M12 2s7 7.5 7 13a7 7 0 0 1-14 0c0-5.5 7-13 7-13z"/>', "heart":'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z"/>', "tv":'<rect x="2" y="5" width="20" height="13" rx="2"/><path d="M8 22h8M12 18v4"/>', "wallet":'<rect x="2" y="6" width="20" height="14" rx="2"/><path d="M16 13h2M2 10h20"/>', "car":'<path d="M5 17h14M3 17v-5l2-5h14l2 5v5"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>'};
+const P=[
+ ["Token & Tagihan PLN","Listrik","zap","#FF7A00",1,"/pln",[["Token 20.000",21500],["Token 50.000",51500],["Token 100.000",101500],["Tagihan PLN (admin)",2500]],"Mulai Rp 21.500"],
+ ["Pulsa","Pulsa & Data","phone","#ef4444",1,"/pulsa",[["Rp 10.000",11000],["Rp 25.000",25500],["Rp 50.000",50000],["Rp 100.000",99000]],"Mulai Rp 11.000"],
+ ["Paket Data","Pulsa & Data","wifi","#06b6d4",1,"/paket-data",[["5 GB / 30 hari",30000],["15 GB / 30 hari",62000],["30 GB / 30 hari",95000],["Unlimited",120000]],"Mulai Rp 30.000"],
+ ["PDAM","Tagihan","drop","#3b82f6",0,"/pdam",[],"Admin mulai Rp 2.500"],
+ ["BPJS Kesehatan","Tagihan","heart","#16a34a",1,"/bpjs",[],"Iuran mulai Rp 42.000"],
+ ["Internet & TV","Tagihan","tv","#8b5cf6",0,"",[["IndiHome",2500],["Biznet",2500],["First Media",2500],["MNC Vision",2500]],"Admin mulai Rp 2.500"],
+ ["E-Wallet","E-Wallet","wallet","#0ea5e9",0,"",[["DANA 50.000",51000],["GoPay 50.000",51000],["OVO 50.000",51500],["ShopeePay 50.000",51500]],"Mulai Rp 26.000"],
+ ["Multifinance","Cicilan","car","#dc2626",0,"",[["Adira Finance",5000],["FIF Group",5000],["BAF",5000],["WOM Finance",5000]],"Admin mulai Rp 5.000"]
+];
+const rp=n=>"Rp "+n.toLocaleString("id-ID");
+const cats=["Semua","Listrik","Pulsa & Data","Tagihan","E-Wallet","Cicilan"];let cat="Semua",q="";
+const tabs=document.getElementById("tabs"),grid=document.getElementById("grid");
+function drawTabs(){tabs.innerHTML=cats.map(c=>`<button class="tab ${c==cat?'on':''}" data-c="${c}">${c}</button>`).join("")}
+function draw(){grid.innerHTML=P.map((p,i)=>[p,i]).filter(([p])=>(cat=="Semua"||p[1]==cat)&&p[0].toLowerCase().includes(q)).map(([p,i])=>`
+<${p[5]?'a href="'+p[5]+'"':'div'} class="prod panel block p-4" data-i="${i}"><div class="tile relative" style="background:radial-gradient(circle at 50% 40%,${p[3]}55,#1c1c26 70%)"><div class="ico3d"><div class="sp"><img class="sprimg" src="${SPR}" alt="" style="left:-${(i%4)*100}%;top:-${(i/4|0)*100}%"></div></div>${p[4]?'<span class="absolute left-2 top-2 rounded-md bg-[#FF7A00] px-2 py-0.5 text-[10px] font-bold text-white">HOT</span>':''}</div>
+<p class="mt-3 font-semibold leading-tight">${p[0]}</p><p class="mt-1 text-xs text-[#9a9aa8]">${p[7]}</p></${p[5]?'a':'div'}>`).join("")||'<p class="col-span-full text-[#9a9aa8]">Layanan tidak ditemukan.</p>'}
+tabs.onclick=e=>{if(e.target.dataset.c){cat=e.target.dataset.c;drawTabs();draw()}};
+document.getElementById("q").oninput=e=>{q=e.target.value.toLowerCase();draw()};
+drawTabs();draw();
+const modal=document.getElementById("modal");let sel=null;
+grid.onclick=e=>{const c=e.target.closest(".prod");if(!c||c.tagName=="A")return;const p=P[c.dataset.i];sel=null;
+ document.getElementById("mt").textContent=p[0];document.getElementById("tot").textContent="-";document.getElementById("msg").textContent="";
+ document.getElementById("noms").innerHTML=p[6].map(n=>`<button class="nom" data-v="${n[1]}"><p class="text-sm font-semibold">${n[0]}</p><p class="text-xs text-[#FF7A00]">${rp(n[1])}</p></button>`).join("");
+ modal.classList.replace("hidden","flex")};
+document.getElementById("noms").onclick=e=>{const b=e.target.closest(".nom");if(!b)return;document.querySelectorAll(".nom").forEach(x=>x.classList.remove("on"));b.classList.add("on");sel=+b.dataset.v;document.getElementById("tot").textContent=rp(sel)};
+document.getElementById("mx").onclick=()=>modal.classList.replace("flex","hidden");
+modal.onclick=e=>{if(e.target==modal)modal.classList.replace("flex","hidden")};
+document.getElementById("pay").onclick=()=>{const m=document.getElementById("msg");
+ if(!document.getElementById("uid").value||!sel){m.className="mt-3 text-center text-sm text-red-400";m.textContent="Isi nomor dan pilih nominal dulu ya.";return}
+ m.className="mt-3 text-center text-sm text-green-400";m.textContent="Invoice NXS-"+Math.floor(100000+Math.random()*9e5)+" dibuat. Silakan lanjutkan pembayaran."};
+// countdown
+let end=Date.now()+5*3600e3+23*60e3;const cd=document.getElementById("cd");
+setInterval(()=>{let s=Math.max(0,(end-Date.now())/1e3|0);const u=[s/3600|0,(s%3600)/60|0,s%60];
+ cd.innerHTML=u.map((v,i)=>`<div class="rounded-xl bg-[#0b0b0f] border border-[#2a2a36] px-4 py-3"><p class="text-3xl font-extrabold text-[#FF7A00]">${String(v).padStart(2,"0")}</p><p class="text-xs text-[#9a9aa8]">${["Jam","Menit","Detik"][i]}</p></div>`).join("")},1000);
+// live feed
+const names=["Andi","Sari","Bima","Nia","Fajar","Rani","Yoga","Tia"],live=document.getElementById("live");
+function feed(){const L=P.filter(x=>x[6].length),p=L[Math.random()*L.length|0],n=p[6][Math.random()*4|0];
+ live.insertAdjacentHTML("afterbegin",`<li class="flex justify-between gap-3"><span><b>${names[Math.random()*8|0]}***</b> <span class="text-[#9a9aa8]">${n[0]} ${p[0]}</span></span><span class="text-green-400">Sukses</span></li>`);
+ while(live.children.length>4)live.lastChild.remove()}
+for(let i=0;i<4;i++)feed();setInterval(feed,2500);
+document.getElementById("cekf").onsubmit=e=>{e.preventDefault();document.getElementById("cekr").innerHTML='<span class="text-green-400">● Sukses</span> — pesanan sudah terkirim ke akun tujuan.'};
+</script>
+<script>(function(){const sync=()=>{const u=document.getElementById("sprsrc");if(!u)return;const v=u.currentSrc||u.src||u.getAttribute("src");document.querySelectorAll("img.sprimg").forEach(i=>{if(v&&i.src!==v)i.src=v})};
+new MutationObserver(sync).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["src"]});addEventListener("load",sync);let k=0;const t=setInterval(()=>{sync();if(++k>20)clearInterval(t)},500);sync()})();</script>
+
+</body></html>

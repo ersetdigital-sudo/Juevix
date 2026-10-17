@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BPJS Kesehatan — Nexa Store</title>
+<style>html,body{overflow-x:hidden;max-width:100%}
+:root{--bg:#0b0b0f;--panel:#14141b;--panel2:#1c1c26;--line:#2a2a36;--ink:#f5f5f5;--mut:#9a9aa8;--or:#FF7A00;--or2:#FFA64D}
+body{overflow-x:hidden;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}
+h1,h2,h3,.hd{font-family:"Plus Jakarta Sans",sans-serif}
+.btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--or);color:#fff;font-weight:800;border-radius:12px;padding:.85rem 1.4rem;transition:.2s}
+.btn:hover{background:var(--or2);transform:translateY(-1px)}
+.ghost{border:1px solid var(--line);border-radius:12px;padding:.85rem 1.4rem;font-weight:700;color:var(--ink)}
+.ghost:hover{border-color:var(--or)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px}
+.grid-bg{background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse at 70% 30%,#000 10%,transparent 70%)}
+.glow{background:radial-gradient(circle,rgba(255,122,0,.35),transparent 65%)}
+.tab{padding:.55rem 1.1rem;border-radius:999px;border:1px solid var(--line);color:var(--mut);font-weight:600;font-size:.9rem;white-space:nowrap}
+.tab.on{background:var(--or);color:#fff;border-color:var(--or)}
+.prod{transition:.2s;cursor:pointer}
+.prod:hover{border-color:var(--or);transform:translateY(-4px)}
+.tile{aspect-ratio:1;border-radius:16px;display:grid;place-items:center;font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;font-size:1.3rem}
+.nom{border:1px solid var(--line);border-radius:12px;padding:.8rem;text-align:left;cursor:pointer}
+.nom.on{border-color:var(--or);background:rgba(255,122,0,.1)}
+.marq{display:flex;gap:3rem;animation:m 28s linear infinite;width:max-content}
+@keyframes m{to{transform:translateX(-50%)}}
+details summary{list-style:none;cursor:pointer}
+details summary::-webkit-details-marker{display:none}
+details[open] .pl{transform:rotate(45deg)}
+.ico3d{position:relative;display:block;overflow:visible;width:78%;height:auto;aspect-ratio:1/1;min-width:56px;min-height:56px;margin:auto;filter:drop-shadow(0 14px 18px rgba(0,0,0,.45));transition:transform .35s}.prod:hover .ico3d{transform:translateY(-6px) scale(1.06) rotate(-4deg)}@keyframes fl{50%{transform:translateY(-6px)}}.flo{animation:fl 3s ease-in-out infinite}
+.ico3d .sp{position:absolute;inset:0;overflow:hidden}.ico3d img{position:absolute;width:400%;height:200%;max-width:none}
+</style><script src="https://cdn.moda.app/runtime-libs/tailwind-browser-4.1.13-index.global.min.js"></script><style data-moda-export-fonts="true">@font-face { font-family: 'Inter'; src: url("../../fonts/inter_24pt-thin.ttf") format("truetype"); font-style: normal; font-weight: 100; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../../fonts/inter_24pt-thinitalic.ttf") format("truetype"); font-style: italic; font-weight: 100; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../../fonts/inter_24pt-extralight.ttf") format("truetype"); font-style: normal; font-weight: 200; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../../fonts/inter_24pt-extralightitalic.ttf") format("truetype"); font-style: italic; font-weight: 200; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../../fonts/inter_24pt-light.ttf") format("truetype"); font-style: normal; font-weight: 300; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../../fonts/inter_24pt-lightitalic.ttf") format("truetype"); font-style: italic; font-weight: 300; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../../fonts/inter_24pt-regular.ttf") format("truetype"); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../../fonts/inter_24pt-italic.ttf") format("truetype"); font-style: italic; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../../fonts/inter_24pt-medium.ttf") format("truetype"); font-style: normal; font-weight: 500; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../../fonts/inter_24pt-mediumitalic.ttf") format("truetype"); font-style: italic; font-weight: 500; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../../fonts/inter_24pt-semibold.ttf") format("truetype"); font-style: normal; font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../../fonts/inter_24pt-semibolditalic.ttf") format("truetype"); font-style: italic; font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../../fonts/inter_24pt-bold.ttf") format("truetype"); font-style: normal; font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../../fonts/inter_24pt-bolditalic.ttf") format("truetype"); font-style: italic; font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../../fonts/inter_24pt-extrabold.ttf") format("truetype"); font-style: normal; font-weight: 800; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../../fonts/inter_24pt-extrabolditalic.ttf") format("truetype"); font-style: italic; font-weight: 800; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../../fonts/inter_24pt-black.ttf") format("truetype"); font-style: normal; font-weight: 900; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url("../../fonts/inter_24pt-blackitalic.ttf") format("truetype"); font-style: italic; font-weight: 900; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../../fonts/plusjakartasans-extralight.ttf") format("truetype"); font-style: normal; font-weight: 200; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../../fonts/plusjakartasans-extralightitalic.ttf") format("truetype"); font-style: italic; font-weight: 200; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../../fonts/plusjakartasans-light.ttf") format("truetype"); font-style: normal; font-weight: 300; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../../fonts/plusjakartasans-lightitalic.ttf") format("truetype"); font-style: italic; font-weight: 300; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../../fonts/plusjakartasans-regular.ttf") format("truetype"); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../../fonts/plusjakartasans-italic.ttf") format("truetype"); font-style: italic; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../../fonts/plusjakartasans-medium.ttf") format("truetype"); font-style: normal; font-weight: 500; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../../fonts/plusjakartasans-mediumitalic.ttf") format("truetype"); font-style: italic; font-weight: 500; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../../fonts/plusjakartasans-semibold.ttf") format("truetype"); font-style: normal; font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../../fonts/plusjakartasans-semibolditalic.ttf") format("truetype"); font-style: italic; font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../../fonts/plusjakartasans-bold.ttf") format("truetype"); font-style: normal; font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../../fonts/plusjakartasans-bolditalic.ttf") format("truetype"); font-style: italic; font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../../fonts/plusjakartasans-extrabold.ttf") format("truetype"); font-style: normal; font-weight: 800; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url("../../fonts/plusjakartasans-extrabolditalic.ttf") format("truetype"); font-style: italic; font-weight: 800; font-display: swap; }</style></head><body>
+<header class="sticky top-0 z-40 border-b border-[#2a2a36] bg-[#0b0b0f]/85 backdrop-blur">
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
+    <a href="/#" class="flex items-center gap-2"><img src="../../images/9633b1bb-7934-4f2a-9517-419b0b3f68bc.png" alt="Nexa" class="h-7"><span class="hd rounded-md bg-[#FF7A00] px-2 py-0.5 text-xs font-extrabold text-white">STORE</span></a>
+    <nav class="hidden gap-8 text-sm font-semibold text-[#9a9aa8] md:flex">
+      <a href="/pln" class="hover:text-white">PLN</a><a href="/pulsa" class="hover:text-white">Pulsa</a><a href="/bpjs" class="hover:text-white">BPJS</a><a href="/pdam" class="hover:text-white">PDAM</a><a href="/#flash" class="hover:text-white">Flash Sale</a><a href="/#cara" class="hover:text-white">Cara Order</a><a href="/#faq" class="hover:text-white">FAQ</a>
+    </nav>
+    <a href="/#produk" class="btn !py-2.5 text-sm whitespace-nowrap">Bayar</a>
+  </div>
+</header>
+<section class="relative overflow-hidden border-b border-[#2a2a36]">
+ <div class="grid-bg absolute inset-0"></div><div class="glow absolute -right-40 -top-40 h-[500px] w-[500px]"></div>
+ <div class="relative mx-auto max-w-7xl px-5 py-12">
+  <p class="text-sm text-[#9a9aa8]"><a href="/" class="hover:text-white">Beranda</a> / <span class="text-white">BPJS Kesehatan</span></p>
+  <div class="mt-6 flex items-center gap-5"><div class="grid h-24 w-24 shrink-0 place-items-center rounded-3xl border border-[#2a2a36] bg-[#1c1c26]"><div class="ico3d flo"><div class="sp"><img src="../../images/94d6dcf0-d906-4125-bbea-6601ff05d002.png" alt="" style="left:-0%;top:-100%"></div></div></div>
+  <h1 class="text-4xl font-extrabold md:text-5xl">BPJS Kesehatan</h1></div>
+  <p class="mt-4 max-w-2xl text-[#9a9aa8]">Bayar iuran BPJS Kesehatan untuk kamu dan keluarga. Bisa sekaligus beberapa bulan.</p>
+  <div class="mt-6 hidden md:flex flex-wrap gap-2 pb-1"><a href="/pln" class="tab ">Token &amp; Tagihan PLN</a><a href="/pulsa" class="tab ">Pulsa All Operator</a><a href="/paket-data" class="tab ">Paket Data</a><a href="/bpjs" class="tab on">BPJS Kesehatan</a><a href="/pdam" class="tab ">PDAM</a></div>
+ </div>
+</section>
+<section class="mx-auto grid max-w-7xl gap-6 px-5 py-14 lg:grid-cols-3">
+ <div class="panel min-w-0 p-7 lg:col-span-2">
+  <label class="text-sm font-semibold">Nomor VA Keluarga</label>
+  <input id="uid" inputmode="numeric" class="mt-3 w-full rounded-xl border border-[#2a2a36] bg-[#0b0b0f] px-4 py-3 outline-none focus:border-[#FF7A00]" placeholder="Contoh: 8888801234567890">
+  <p class="mt-6 text-sm font-semibold">Bayar untuk</p><div class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3"><button class="nom" data-n="1 Bulan" data-v="0"><p class="text-sm font-semibold">1 Bulan</p><p class="text-xs text-[#FF7A00]">Cek tagihan</p></button><button class="nom" data-n="2 Bulan" data-v="0"><p class="text-sm font-semibold">2 Bulan</p><p class="text-xs text-[#FF7A00]">Cek tagihan</p></button><button class="nom" data-n="3 Bulan" data-v="0"><p class="text-sm font-semibold">3 Bulan</p><p class="text-xs text-[#FF7A00]">Cek tagihan</p></button><button class="nom" data-n="6 Bulan" data-v="0"><p class="text-sm font-semibold">6 Bulan</p><p class="text-xs text-[#FF7A00]">Cek tagihan</p></button></div>
+ </div>
+ <aside class="panel h-fit min-w-0 p-7 lg:sticky lg:top-24">
+  <h2 class="text-xl font-extrabold">Ringkasan</h2>
+  <dl class="mt-5 space-y-3 text-sm">
+   <div class="flex justify-between gap-3"><dt class="text-[#9a9aa8]">Layanan</dt><dd>BPJS Kesehatan</dd></div>
+   <div class="flex justify-between gap-3"><dt class="text-[#9a9aa8]">Nomor</dt><dd id="sn">-</dd></div>
+   <div class="flex justify-between gap-3"><dt class="text-[#9a9aa8]">Produk</dt><dd id="sp" class="text-right">-</dd></div>
+  </dl>
+  <div class="mt-5 flex items-center justify-between border-t border-[#2a2a36] pt-5"><span class="text-[#9a9aa8]">Total</span><span id="tot" class="hd text-2xl font-extrabold text-[#FF7A00]">-</span></div>
+  <button id="pay" class="btn mt-5 w-full justify-center">Lanjut Bayar</button>
+  <p id="msg" class="mt-3 text-center text-sm"></p>
+  <ul class="mt-6 space-y-2 border-t border-[#2a2a36] pt-5 text-sm text-[#9a9aa8]"><li class="flex gap-3"><span class="text-[#FF7A00]">✓</span>Gunakan nomor VA keluarga (16 digit) dari kartu BPJS.</li><li class="flex gap-3"><span class="text-[#FF7A00]">✓</span>Total iuran mengikuti jumlah anggota &amp; kelas.</li><li class="flex gap-3"><span class="text-[#FF7A00]">✓</span>Biaya admin Rp 2.500 per transaksi.</li></ul>
+ </aside>
+</section>
+<script>
+const rp=n=>"Rp "+n.toLocaleString("id-ID");let v=null,name=null;const slug="bpjs";
+const uid=document.getElementById("uid");uid.oninput=()=>document.getElementById("sn").textContent=uid.value||"-";
+function mock(){const d=uid.value.length;return slug=="bpjs"?42000*(+name[0]||1)*2+2500:(slug=="pdam"?78000+d*3150+2500:(slug=="pln"?235000+d*1200+2500:0))}
+document.querySelectorAll(".nom").forEach(b=>b.onclick=()=>{document.querySelectorAll(".nom").forEach(x=>x.classList.remove("on"));b.classList.add("on");name=b.dataset.n;v=+b.dataset.v;document.getElementById("sp").textContent=name;document.getElementById("tot").textContent=v?rp(v):(uid.value?rp(mock()):"Isi nomor dulu")});
+const reg=document.getElementById("reg");if(reg){name=reg.value;document.getElementById("sp").textContent=name;reg.onchange=()=>{name=reg.value;document.getElementById("sp").textContent=name}}
+document.getElementById("pay").onclick=()=>{const m=document.getElementById("msg");
+ if(!uid.value||!name){m.className="mt-3 text-center text-sm text-red-400";m.textContent="Isi nomor dan pilih produk dulu ya.";return}
+ const t=v||mock();document.getElementById("tot").textContent=rp(t);
+ const q=new URLSearchParams({l:document.title.split(" — ")[0],s:slug,no:uid.value,p:name,t:t});location.href="/bayar?"+q.toString()};
+</script></body></html>

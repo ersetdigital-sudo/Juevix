@@ -1,0 +1,333 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------
+   Design tokens Nexa Store (dark + orange)
+   --------------------------------------------------------------- */
+@theme {
+  --color-bg: #0b0b0f;
+  --color-panel: #14141b;
+  --color-panel-2: #1c1c26;
+  --color-line: #2a2a36;
+  --color-ink: #f5f5f5;
+  --color-muted: #9a9aa8;
+  --color-brand: #ff7a00;
+  --color-brand-soft: #ffa64d;
+
+  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-jakarta), var(--font-inter), system-ui, sans-serif;
+
+  --animate-marquee: marquee 28s linear infinite;
+  --animate-float: float 3s ease-in-out infinite;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes float {
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@layer base {
+  html {
+    max-width: 100%;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  /* Nomor heading rapat seperti desain asli */
+  .hd-tight {
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  ::selection {
+    background: var(--color-brand);
+    color: #fff;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@layer components {
+  .panel {
+    background-color: var(--color-panel);
+    border: 1px solid var(--color-line);
+    border-radius: 20px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: var(--color-brand);
+    color: #fff;
+    font-weight: 800;
+    border-radius: 12px;
+    padding: 0.85rem 1.4rem;
+    transition:
+      background-color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .btn:hover {
+    background-color: var(--color-brand-soft);
+    transform: translateY(-1px);
+  }
+
+  .ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid var(--color-line);
+    border-radius: 12px;
+    padding: 0.85rem 1.4rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    transition: border-color 0.2s ease;
+  }
+
+  .ghost:hover {
+    border-color: var(--color-brand);
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(var(--color-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-line) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse at 70% 30%, #000 10%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse at 70% 30%, #000 10%, transparent 70%);
+  }
+
+  .glow {
+    background: radial-gradient(circle, rgba(255, 122, 0, 0.35), transparent 65%);
+  }
+
+  .tab {
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-line);
+    color: var(--color-muted);
+    font-weight: 600;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .tab:hover {
+    color: var(--color-ink);
+    border-color: #3d3d4d;
+  }
+
+  .tab.is-active,
+  .tab.is-active:hover {
+    background-color: var(--color-brand);
+    border-color: var(--color-brand);
+    color: #fff;
+  }
+
+  .prod {
+    transition:
+      border-color 0.2s ease,
+      transform 0.2s ease;
+    cursor: pointer;
+  }
+
+  .prod:hover {
+    border-color: var(--color-brand);
+    transform: translateY(-4px);
+  }
+
+  .tile {
+    /* Tile sengaja tidak persegi: kotak tinggi menyisakan banyak ruang kosong. */
+    aspect-ratio: 3 / 2;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+  }
+
+  /* Ukuran ikon relatif terhadap lebar tile — atur di satu tempat ini.
+     Tile rasionya tetap, jadi satu angka ini menjaga ikon tetap proporsional
+     di semua lebar layar. */
+  .tile-icon {
+    width: 44%;
+  }
+
+  .nom {
+    border: 1px solid var(--color-line);
+    border-radius: 12px;
+    padding: 0.8rem;
+    text-align: left;
+    cursor: pointer;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .nom:hover {
+    border-color: #46465a;
+  }
+
+  .nom.is-active,
+  .nom.is-active:hover {
+    border-color: var(--color-brand);
+    background-color: rgba(255, 122, 0, 0.1);
+  }
+
+  .marq {
+    display: flex;
+    gap: 3rem;
+    width: max-content;
+    animation: var(--animate-marquee);
+  }
+
+  .marq:hover {
+    animation-play-state: paused;
+  }
+
+  /* Ikon 3D dari sprite sheet (4 kolom x 2 baris) */
+  .sprite {
+    position: relative;
+    display: block;
+    overflow: visible;
+    width: 100%;
+    /* Sama dengan rasio satu kuadran sprite (344x384) supaya ikon tidak tertarik. */
+    aspect-ratio: 344 / 384;
+    filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.45));
+    transition: transform 0.35s ease;
+  }
+
+  .sprite-frame {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .sprite-img {
+    position: absolute;
+    width: 400%;
+    height: 200%;
+    max-width: none;
+  }
+
+  .prod:hover .sprite {
+    transform: translateY(-6px) scale(1.06) rotate(-4deg);
+  }
+
+  /* Kartu metode pembayaran */
+  .pm {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+    text-align: left;
+    border: 1px solid var(--color-line);
+    border-radius: 14px;
+    padding: 1rem;
+    cursor: pointer;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .pm:hover {
+    border-color: var(--color-brand);
+  }
+
+  .pm.is-active,
+  .pm.is-active:hover {
+    border-color: var(--color-brand);
+    background-color: rgba(255, 122, 0, 0.1);
+  }
+
+  .pm .dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    border: 2px solid var(--color-line);
+    flex-shrink: 0;
+  }
+
+  .pm.is-active .dot {
+    border: 5px solid var(--color-brand);
+  }
+
+  /* Field input gelap */
+  .field {
+    width: 100%;
+    min-width: 0;
+    border-radius: 12px;
+    border: 1px solid var(--color-line);
+    background-color: var(--color-bg);
+    padding: 0.75rem 1rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+
+  .field::placeholder {
+    color: #55556a;
+  }
+
+  .field:focus {
+    border-color: var(--color-brand);
+    outline: none;
+  }
+}
