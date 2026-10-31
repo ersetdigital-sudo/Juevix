@@ -4,7 +4,7 @@
  */
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://juevix.id";
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://juevixonline.my.id";
 
 export const site = {
   name: "Juevix",

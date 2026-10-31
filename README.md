@@ -18,7 +18,7 @@ npm run lint    # ESLint
 
 Situs ini memakai project Supabase bersama untuk semua brand:
 
-- `BRAND_SLUG=juevix-online` (brand row: Juevix, domain `juevix.id`)
+- `BRAND_SLUG=juevix-online` (brand row: Juevix, domain `juevixonline.my.id`)
 - Katalog, harga, metode bayar, QRIS, dan status transaksi dibaca dari Supabase.
 - Checkout memakai RPC `create_order` / `create_bill_check`; status dan SN dicek lewat `cek_order` / `get_payment`.
 - Dashboard admin ada di `/admin` (satu deployment dengan web), tema oranye-hitam.
@@ -91,7 +91,7 @@ Tidak perlu menyentuh komponen.
 
 ## Perlu diisi manual sebelum produksi
 
-1. **`NEXT_PUBLIC_SITE_URL`** — domain final (default `https://juevix.id`). Dipakai untuk canonical, OG, sitemap, robots.
+1. **`NEXT_PUBLIC_SITE_URL`** — domain final (default `https://juevixonline.my.id`). Dipakai untuk canonical, OG, sitemap, robots.
 2. **`NEXT_PUBLIC_WHATSAPP`** — nomor CS format `62812xxxxxxx`. Selama kosong, tombol WhatsApp tidak dirender.
 3. **Email CS** — `NEXT_PUBLIC_EMAIL`. Sama, tidak dirender bila kosong.
 4. **Metode pembayaran** — hanya QRIS yang aktif. Aktifkan metode lain dari admin jika kanal pembayarannya sudah tersedia.
