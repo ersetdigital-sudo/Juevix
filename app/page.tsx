@@ -6,11 +6,26 @@ import { FaqJsonLd } from "@/components/json-ld";
 import { LiveFeed } from "@/components/live-feed";
 import { Marquee } from "@/components/marquee";
 import { ProductExplorer } from "@/components/product-explorer";
+import { buildHomeProducts } from "@/lib/commerce";
+import { getCatalog } from "@/lib/db/server";
+import type { ProductLinks } from "@/lib/commerce";
 import { Reveal } from "@/components/reveal";
 import { orderSteps, testimonials } from "@/data/content";
+import { products as staticProducts } from "@/data/products";
 import { site } from "@/lib/site";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const catalog = await getCatalog();
+  const home = catalog.data ? buildHomeProducts(catalog.data) : null;
+  const homeProducts = home?.products ?? staticProducts;
+  const homeLinks: ProductLinks = home?.links ?? {
+    brandSlug: catalog.data?.brand.slug ?? "",
+    methodId: "",
+    waCs: catalog.data?.brand.wa_cs ?? null,
+    options: {},
+  };
+  const brandSlug = catalog.data?.brand.slug ?? "";
+
   return (
     <main id="main" className="flex-1">
       {/* HERO */}
@@ -111,7 +126,7 @@ export default function HomePage() {
 
       {/* PRODUK */}
       <section id="produk" className="mx-auto max-w-7xl scroll-mt-24 px-5 py-20">
-        <ProductExplorer />
+        <ProductExplorer products={homeProducts} links={homeLinks} />
       </section>
 
       {/* CARA ORDER */}
@@ -146,7 +161,7 @@ export default function HomePage() {
           <p className="mt-2 text-muted">
             Masukkan nomor invoice dari email / WhatsApp.
           </p>
-          <CheckOrderForm />
+          <CheckOrderForm brandSlug={brandSlug} />
         </div>
 
         <div className="grid gap-4">

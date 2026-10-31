@@ -1,267 +1,255 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  activePaymentGroups,
-  checkoutConfig,
-  defaultPaymentMethodId,
-  findPaymentMethod,
-} from "@/data/payment-methods";
-import { digitsOnly, invoiceNumber, mmss, rupiah } from "@/lib/format";
+import type { PaymentInfo } from "@/lib/db/types";
+import { fmtDate, mmss, rupiah } from "@/lib/format";
 import { cn } from "@/lib/cn";
 
-const PAYMENT_WINDOW_SECONDS = 15 * 60;
+const STATUS_LABEL: Record<PaymentInfo["status"], string> = {
+  menunggu_cek: "Lagi dicek admin",
+  menunggu_bayar: "Menunggu pembayaran",
+  sudah_bayar: "Pembayaran dicek admin",
+  sukses: "Sukses",
+  dibatalkan: "Dibatalkan",
+};
 
-export function PaymentFlow() {
-  const searchParams = useSearchParams();
+const STATUS_CLASS: Record<PaymentInfo["status"], string> = {
+  menunggu_cek: "bg-amber-400/15 text-amber-300",
+  menunggu_bayar: "bg-amber-400/15 text-amber-300",
+  sudah_bayar: "bg-sky-400/15 text-sky-300",
+  sukses: "bg-green-400/15 text-green-300",
+  dibatalkan: "bg-white/10 text-muted",
+};
 
-  const serviceLabel = searchParams.get("l") ?? "-";
-  const customerNumber = searchParams.get("no") ?? "-";
-  const product = searchParams.get("p") ?? "-";
-  const price = Number(searchParams.get("t") ?? 0) || 0;
+export function PaymentFlow({
+  payment,
+  sn = null,
+}: {
+  payment: PaymentInfo;
+  sn?: string | null;
+}) {
+  const [remaining, setRemaining] = useState<number | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [notice, setNotice] = useState("");
 
-  const [methodId, setMethodId] = useState(defaultPaymentMethodId);
-  const [whatsapp, setWhatsapp] = useState("");
-  const [error, setError] = useState("");
-  const [invoice, setInvoice] = useState<string | null>(null);
-  const [expiresAt, setExpiresAt] = useState<number | null>(null);
-  const [virtualAccount, setVirtualAccount] = useState("");
-  const [remaining, setRemaining] = useState(PAYMENT_WINDOW_SECONDS);
-  const [paidMessage, setPaidMessage] = useState("");
-
-  const method = findPaymentMethod(methodId) ?? findPaymentMethod(defaultPaymentMethodId)!;
-  const fee = method.fee;
-  const total = price + fee;
-
-  // Hitung mundur masa berlaku invoice
   useEffect(() => {
-    if (expiresAt === null) return;
-
-    const timer = window.setInterval(() => {
-      setRemaining(Math.max(0, Math.ceil((expiresAt - Date.now()) / 1000)));
-    }, 1000);
-
+    if (payment.status !== "menunggu_bayar" || !payment.expires_at) {
+      setRemaining(null);
+      return;
+    }
+    const target = new Date(payment.expires_at).getTime();
+    const update = () => {
+      setRemaining(Math.max(0, Math.ceil((target - Date.now()) / 1000)));
+    };
+    update();
+    const timer = window.setInterval(update, 1000);
     return () => window.clearInterval(timer);
-  }, [expiresAt]);
+  }, [payment.status, payment.expires_at]);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const expired =
+    payment.status === "menunggu_bayar" &&
+    remaining !== null &&
+    remaining <= 0;
+  const status = expired ? "dibatalkan" : payment.status;
+  const label = STATUS_LABEL[status];
+  const total =
+    payment.total !== null ? rupiah(payment.total) : "Belum ditetapkan";
+  const waDigits = (payment.wa_cs ?? "").replace(/\D/g, "");
+  const waMessage = `Halo CS ${payment.nama_brand}, saya ingin konfirmasi pembayaran:\n\nKode referensi: ${payment.ref}\nProduk: ${payment.nama_produk ?? payment.nama_layanan}\nNomor tujuan: ${payment.nomor_tujuan}\nTotal: ${payment.total !== null ? rupiah(payment.total) : "belum ditetapkan"}\n\nBukti transfer saya lampirkan.`;
+  const waHref = waDigits
+    ? `https://wa.me/${waDigits}?text=${encodeURIComponent(waMessage)}`
+    : null;
 
-    if (price <= 0) {
-      setError("Pesanan tidak ditemukan. Pilih layanan dulu ya.");
-      return;
+  async function copyRef() {
+    try {
+      await navigator.clipboard.writeText(payment.ref);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      setNotice("Kode referensi tidak bisa disalin otomatis.");
     }
-
-    if (
-      checkoutConfig.askWhatsAppForReceipt &&
-      digitsOnly(whatsapp).length < 9
-    ) {
-      setError("Isi nomor WhatsApp dulu ya (minimal 9 angka).");
-      return;
-    }
-
-    setError("");
-    setInvoice(invoiceNumber());
-    setVirtualAccount(`8808 ${Math.floor(10000000 + Math.random() * 90000000)}`);
-    setPaidMessage("");
-    setRemaining(PAYMENT_WINDOW_SECONDS);
-    setExpiresAt(Date.now() + PAYMENT_WINDOW_SECONDS * 1000);
-  };
-
-  if (invoice) {
-    return (
-      <section className="panel mx-auto max-w-md p-6 text-center">
-        <p className="text-sm text-muted">Invoice</p>
-        <p className="font-display text-xl font-extrabold">{invoice}</p>
-
-        <p className="mt-4 text-sm text-muted">Total bayar</p>
-        <p className="font-display text-3xl font-extrabold text-brand">
-          {rupiah(total)}
-        </p>
-
-        <div className="mt-5 rounded-2xl border border-line bg-bg p-5">
-          {method.id === "QRIS" ? (
-            <>
-              <p className="text-sm text-muted">Scan QRIS di bawah</p>
-              <a
-                href="/images/payments/qris.jpg"
-                target="_blank"
-                rel="noreferrer"
-                className="mt-3 block"
-              >
-                <Image
-                  src="/images/payments/qris.jpg"
-                  alt="Poster QRIS merchant ASWAR MOBILE GEN, NMID ID1026469692366"
-                  width={1135}
-                  height={1600}
-                  sizes="(max-width: 640px) 90vw, 300px"
-                  className="mx-auto h-auto w-full max-w-[300px] rounded-xl bg-white"
-                />
-              </a>
-              <p className="mt-3 text-xs text-muted">
-                Ketuk gambar untuk membuka ukuran penuh. Nominal diisi manual
-                sesuai total di atas.
-              </p>
-            </>
-          ) : method.id.includes("Virtual Account") ? (
-            <>
-              <p className="text-sm text-muted">{method.id}</p>
-              <p className="font-display mt-2 text-2xl font-extrabold tracking-wider">
-                {virtualAccount}
-              </p>
-            </>
-          ) : (
-            <p className="text-sm text-muted">
-              Notifikasi pembayaran dikirim ke aplikasi {method.name}
-            </p>
-          )}
-        </div>
-
-        <p className="mt-4 text-sm text-muted">
-          Selesaikan dalam{" "}
-          <b className="text-white">{mmss(remaining)}</b>
-        </p>
-
-        <button
-          type="button"
-          onClick={() =>
-            setPaidMessage(
-              checkoutConfig.askWhatsAppForReceipt
-                ? "Terima kasih! Pembayaran sedang diverifikasi, struk dikirim ke WhatsApp."
-                : "Terima kasih! Pembayaran sedang diverifikasi.",
-            )
-          }
-          className="btn mt-5 w-full justify-center"
-        >
-          Saya Sudah Bayar
-        </button>
-
-        <p aria-live="polite" className="mt-3 text-sm text-green-400">
-          {paidMessage}
-        </p>
-      </section>
-    );
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]"
-    >
-      <div className="panel min-w-0 p-6">
-        <h2 className="font-bold">Metode Pembayaran</h2>
-
-        {activePaymentGroups.map((group) => (
-          <fieldset key={group.label} className="mt-5">
-            <legend className="text-xs font-bold uppercase tracking-widest text-muted">
-              {group.label}
-            </legend>
-            <div
-              className={cn(
-                "mt-2 grid gap-2",
-                group.columns === 2 && "sm:grid-cols-2",
-              )}
-            >
-              {group.methods.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  aria-pressed={methodId === item.id}
-                  onClick={() => setMethodId(item.id)}
-                  className={cn("pm", methodId === item.id && "is-active")}
-                >
-                  <span>
-                    <b>{item.name}</b>
-                    {item.description && (
-                      <span className="block text-xs text-muted">
-                        {item.description}
-                      </span>
-                    )}
-                  </span>
-                  <span className="dot" aria-hidden="true" />
-                </button>
-              ))}
-            </div>
-          </fieldset>
-        ))}
-
-        {checkoutConfig.askWhatsAppForReceipt && (
-          <>
-            <label htmlFor="whatsapp" className="mt-6 block text-sm font-bold">
-              No. WhatsApp (untuk kirim struk)
-            </label>
-            <input
-              id="whatsapp"
-              name="whatsapp"
-              inputMode="numeric"
-              autoComplete="tel"
-              value={whatsapp}
-              onChange={(event) => setWhatsapp(event.target.value)}
-              className="field mt-2"
-              placeholder="08xxxxxxxxxx"
-            />
-          </>
-        )}
+    <section className="panel mx-auto max-w-md p-6">
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-line pb-4">
+        <div>
+          <p className="text-sm text-muted">Kode referensi</p>
+          <p className="font-display text-xl font-extrabold">{payment.ref}</p>
+          <p className="mt-1 text-xs text-muted">{fmtDate(payment.created_at)}</p>
+        </div>
+        <span
+          className={cn(
+            "rounded-full px-3 py-1 text-xs font-bold",
+            STATUS_CLASS[status],
+          )}
+        >
+          {label}
+        </span>
       </div>
 
-      <aside className="panel h-max p-6 lg:sticky lg:top-24">
-        <h2 className="font-bold">Ringkasan Pesanan</h2>
+      <div className="mt-5 text-center">
+        <p className="text-sm text-muted">
+          {payment.nama_produk ?? payment.nama_layanan}
+        </p>
+        <p className="mt-1 text-sm text-muted">{payment.nomor_tujuan}</p>
+        <p className="mt-4 text-sm text-muted">Total bayar</p>
+        <p className="font-display text-3xl font-extrabold text-brand">
+          {total}
+        </p>
+      </div>
 
-        <dl className="mt-4 space-y-2 text-sm">
-          <div className="flex justify-between gap-3">
-            <dt className="text-muted">Layanan</dt>
-            <dd className="text-right">{serviceLabel}</dd>
-          </div>
-          <div className="flex justify-between gap-3">
-            <dt className="text-muted">Nomor</dt>
-            <dd className="break-all text-right">{customerNumber}</dd>
-          </div>
-          <div className="flex justify-between gap-3">
-            <dt className="text-muted">Produk</dt>
-            <dd className="text-right">{product}</dd>
-          </div>
-          <div className="flex justify-between gap-3">
-            <dt className="text-muted">Harga</dt>
-            <dd className="text-right">{price > 0 ? rupiah(price) : "-"}</dd>
-          </div>
-          <div className="flex justify-between gap-3">
-            <dt className="text-muted">Biaya metode</dt>
-            <dd className="text-right">{rupiah(fee)}</dd>
-          </div>
-        </dl>
-
-        <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
-          <span className="text-muted">Total</span>
-          <b className="text-xl text-brand">{price > 0 ? rupiah(total) : "-"}</b>
+      {status === "menunggu_cek" && (
+        <div className="mt-5 rounded-2xl border border-amber-400/25 bg-amber-400/10 p-4 text-sm text-amber-200">
+          Tagihan sedang dicek admin. Nominal dan link bayar dikirim ke
+          WhatsApp kamu pada jam cek{" "}
+          {payment.jam_cek_tagihan ?? "08.00 - 21.00"}.
         </div>
+      )}
 
-        <button type="submit" className="btn mt-5 w-full justify-center">
-          Bayar Sekarang
+      {status === "menunggu_bayar" && !expired && (
+        <>
+          <div className="mt-5 rounded-2xl border border-line bg-bg p-5">
+            {payment.tipe_metode === "qr" ? (
+              <>
+                <p className="text-center text-sm text-muted">
+                  Scan QRIS di bawah
+                </p>
+                {payment.qris_image_url ? (
+                  <a
+                    href={payment.qris_image_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-3 block"
+                  >
+                    <img
+                      src={payment.qris_image_url}
+                      alt="QRIS pembayaran"
+                      className="mx-auto h-auto w-full max-w-[300px] rounded-xl bg-white"
+                    />
+                  </a>
+                ) : null}
+                <p className="mt-3 text-center text-xs text-muted">
+                  Nominal diisi manual persis{" "}
+                  <b className="text-white">{total}</b>.
+                </p>
+              </>
+            ) : payment.tipe_metode === "va" ? (
+              <>
+                <p className="text-center text-sm text-muted">
+                  {payment.metode_bayar}
+                </p>
+                <p className="font-display mt-2 text-center text-2xl font-extrabold tracking-wider">
+                  8808 {payment.ref.slice(-8, -4)} {payment.ref.slice(-4)} 21
+                </p>
+              </>
+            ) : (
+              <p className="text-center text-sm text-muted">
+                Notifikasi pembayaran dikirim ke aplikasi{" "}
+                <b className="text-white">{payment.metode_bayar}</b>.
+              </p>
+            )}
+          </div>
+
+          <p className="mt-4 text-center text-sm text-muted">
+            Selesaikan dalam{" "}
+            <b className="text-white">
+              {remaining === null ? "--:--" : mmss(remaining)}
+            </b>
+          </p>
+
+          <button
+            type="button"
+            onClick={() => {
+              setNotice(
+                "Pembayaran kamu sedang dicek admin. Simpan kode referensi ini.",
+              );
+              if (waHref) window.open(waHref, "_blank", "noopener,noreferrer");
+            }}
+            className="btn mt-5 w-full justify-center"
+          >
+            Saya Sudah Bayar
+          </button>
+        </>
+      )}
+
+      {status === "sudah_bayar" && (
+        <div className="mt-5 rounded-2xl border border-sky-400/25 bg-sky-400/10 p-4 text-sm text-sky-200">
+          Pembayaran sudah dikonfirmasi. Admin sedang memproses pesanan kamu.
+        </div>
+      )}
+
+      {status === "sukses" && (
+        <div className="mt-5 rounded-2xl border border-green-400/25 bg-green-400/10 p-4 text-sm text-green-200">
+          <p className="font-bold">Transaksi sukses.</p>
+          {sn ? (
+            <p className="mt-2">
+              {/PLN/i.test(payment.nama_layanan) ? "Token" : "Serial number"}:{" "}
+              <b className="font-mono">{sn}</b>
+            </p>
+          ) : null}
+        </div>
+      )}
+
+      {status === "dibatalkan" && (
+        <div className="mt-5 rounded-2xl border border-line bg-white/5 p-4 text-sm text-muted">
+          Transaksi sudah dibatalkan{expired ? " karena waktu habis" : ""}.
+          Silakan buat pesanan baru.
+        </div>
+      )}
+
+      <div className="mt-5 grid gap-2 border-t border-line pt-5 text-sm">
+        <div className="flex justify-between gap-3">
+          <span className="text-muted">Metode</span>
+          <b>{payment.metode_bayar ?? "-"}</b>
+        </div>
+        <div className="flex justify-between gap-3">
+          <span className="text-muted">Biaya admin</span>
+          <b>{rupiah(payment.biaya_admin)}</b>
+        </div>
+        {payment.potongan > 0 ? (
+          <div className="flex justify-between gap-3">
+            <span className="text-muted">Potongan</span>
+            <b className="text-green-400">-{rupiah(payment.potongan)}</b>
+          </div>
+        ) : null}
+        {payment.expires_at && status === "menunggu_bayar" ? (
+          <div className="flex justify-between gap-3">
+            <span className="text-muted">Batas bayar</span>
+            <b>{fmtDate(payment.expires_at)}</b>
+          </div>
+        ) : null}
+      </div>
+
+      {notice ? (
+        <p className="mt-4 text-center text-sm text-green-400" aria-live="polite">
+          {notice}
+        </p>
+      ) : null}
+
+      <div className="mt-5 grid grid-cols-2 gap-2">
+        <button type="button" onClick={copyRef} className="ghost justify-center">
+          {copied ? "Tersalin" : "Salin Referensi"}
         </button>
+        <Link
+          href={`/?q=${encodeURIComponent(payment.ref)}#cek`}
+          className="btn justify-center"
+        >
+          Cek Status
+        </Link>
+      </div>
 
-        <p aria-live="polite" className="mt-3 text-center text-sm text-red-400">
-          {error}
-        </p>
-
-        <p className="mt-4 text-center text-xs text-muted">
-          Metode terpilih: {method.name}
-        </p>
-      </aside>
-    </form>
-  );
-}
-
-export function PaymentBackLink() {
-  const searchParams = useSearchParams();
-  const service = searchParams.get("s");
-  const href = service ? `/${service}` : "/";
-
-  return (
-    <Link href={href} className="text-sm text-muted transition-colors hover:text-white">
-      ← Kembali
-    </Link>
+      {waHref ? (
+        <a
+          href={waHref}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-2 block text-center text-sm font-semibold text-brand"
+        >
+          Hubungi CS via WhatsApp
+        </a>
+      ) : null}
+    </section>
   );
 }

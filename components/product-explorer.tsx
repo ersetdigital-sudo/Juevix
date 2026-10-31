@@ -6,16 +6,25 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import {
   productCategories,
-  products,
   type Product,
   type ProductCategory,
   type ProductOption,
 } from "@/data/products";
-import { rupiah } from "@/lib/format";
+import type { ProductLinks } from "@/lib/commerce";
+import { createBillCheck, createOrder } from "@/lib/db/client";
+import { toPublicError } from "@/lib/db/errors";
+import { digitsOnly, rupiah } from "@/lib/format";
+import { saveRef } from "@/lib/refs";
 import { cn } from "@/lib/cn";
 import { SpriteIcon } from "./sprite-icon";
 
-export function ProductExplorer() {
+export function ProductExplorer({
+  products,
+  links,
+}: {
+  products: Product[];
+  links: ProductLinks;
+}) {
   const [category, setCategory] = useState<ProductCategory>("Semua");
   const [query, setQuery] = useState("");
   const [active, setActive] = useState<Product | null>(null);
@@ -33,7 +42,7 @@ export function ProductExplorer() {
 
       return matchCategory && matchKeyword;
     });
-  }, [category, query]);
+  }, [products, category, query]);
 
   const closeDialog = useCallback(() => {
     setActive(null);
@@ -147,6 +156,7 @@ export function ProductExplorer() {
           <ProductOrderDialog
             key={active.id}
             product={active}
+            links={links}
             onClose={closeDialog}
           />
         )}
@@ -157,16 +167,23 @@ export function ProductExplorer() {
 
 interface ProductOrderDialogProps {
   product: Product;
+  links: ProductLinks;
   onClose: () => void;
 }
 
-function ProductOrderDialog({ product, onClose }: ProductOrderDialogProps) {
+function ProductOrderDialog({
+  product,
+  links,
+  onClose,
+}: ProductOrderDialogProps) {
   const router = useRouter();
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const [customerId, setCustomerId] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
   const [option, setOption] = useState<ProductOption | null>(null);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  const [pending, setPending] = useState(false);
 
   // Fokus pindah ke dialog + kunci scroll body
   useEffect(() => {
@@ -213,26 +230,70 @@ function ProductOrderDialog({ product, onClose }: ProductOrderDialogProps) {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [onClose]);
 
-  const total = option ? rupiah(option.price) : "-";
+  const optionLink = option
+    ? links.options[`${product.id}::${option.label}`]
+    : undefined;
+  const bill = Boolean(optionLink?.bill);
+  const hasBill = product.options.some(
+    (item) => links.options[`${product.id}::${item.label}`]?.bill,
+  );
+  const total = bill ? "Cek tagihan" : option ? rupiah(option.price) : "-";
   const inputId = "dialog-customer-id";
 
-  const handleContinue = () => {
+  async function handleContinue() {
     if (!customerId.trim() || !option) {
       setMessage({ ok: false, text: "Isi nomor dan pilih nominal dulu ya." });
       return;
     }
+    if (!optionLink?.serviceId || !links.methodId) {
+      setMessage({ ok: false, text: "Produk ini belum tersedia." });
+      return;
+    }
 
-    const params = new URLSearchParams({
-      l: product.title,
-      no: customerId.trim(),
-      p: option.label,
-      t: String(option.price),
-    });
-
-    if (product.href) params.set("s", product.href.replace(/^\//, ""));
-
-    router.push(`/bayar?${params.toString()}`);
-  };
+    setMessage(null);
+    setPending(true);
+    try {
+      const input = { [optionLink.inputKey]: customerId.trim(), provider: option.label };
+      let ref: string;
+      if (optionLink.bill) {
+        const wa = digitsOnly(whatsapp);
+        if (wa.length < 9) {
+          setMessage({ ok: false, text: "Isi nomor WhatsApp dulu ya." });
+          setPending(false);
+          return;
+        }
+        const created = await createBillCheck({
+          brandSlug: links.brandSlug,
+          serviceId: optionLink.serviceId,
+          nomorTujuan: customerId.trim(),
+          input,
+          waPembeli: wa,
+          paymentMethodId: links.methodId,
+        });
+        ref = created.ref;
+      } else {
+        if (!optionLink.productId) {
+          setMessage({ ok: false, text: "Nominal ini belum tersedia." });
+          setPending(false);
+          return;
+        }
+        const created = await createOrder({
+          brandSlug: links.brandSlug,
+          serviceId: optionLink.serviceId,
+          productId: optionLink.productId,
+          nomorTujuan: customerId.trim(),
+          input,
+          paymentMethodId: links.methodId,
+        });
+        ref = created.ref;
+      }
+      saveRef(ref);
+      router.push(`/bayar?ref=${encodeURIComponent(ref)}`);
+    } catch (error) {
+      setMessage({ ok: false, text: toPublicError(error).message });
+      setPending(false);
+    }
+  }
 
   return (
     <motion.div
@@ -283,6 +344,23 @@ function ProductOrderDialog({ product, onClose }: ProductOrderDialogProps) {
           placeholder="Contoh: 532110987654"
         />
 
+        {hasBill && (
+          <div className="mt-5">
+            <label htmlFor="dialog-wa" className="block text-sm text-muted">
+              No. WhatsApp (untuk link bayar)
+            </label>
+            <input
+              id="dialog-wa"
+              inputMode="numeric"
+              autoComplete="tel"
+              value={whatsapp}
+              onChange={(event) => setWhatsapp(event.target.value)}
+              className="field mt-2"
+              placeholder="0812xxxxxxxx"
+            />
+          </div>
+        )}
+
         <p className="mt-5 text-sm text-muted">Pilih nominal</p>
         <div className="mt-2 grid grid-cols-2 gap-2">
           {product.options.map((item) => (
@@ -297,7 +375,11 @@ function ProductOrderDialog({ product, onClose }: ProductOrderDialogProps) {
               className={cn("nom", option?.label === item.label && "is-active")}
             >
               <p className="text-sm font-semibold">{item.label}</p>
-              <p className="text-xs text-brand">{rupiah(item.price)}</p>
+              <p className="text-xs text-brand">
+                {links.options[`${product.id}::${item.label}`]?.bill
+                  ? "Cek tagihan"
+                  : rupiah(item.price)}
+              </p>
             </button>
           ))}
         </div>
@@ -307,8 +389,13 @@ function ProductOrderDialog({ product, onClose }: ProductOrderDialogProps) {
           <span className="font-display text-2xl font-extrabold text-brand">{total}</span>
         </div>
 
-        <button type="button" onClick={handleContinue} className="btn mt-5 w-full justify-center">
-          Lanjut Bayar
+        <button
+          type="button"
+          onClick={() => void handleContinue()}
+          disabled={pending}
+          className="btn mt-5 w-full justify-center"
+        >
+          {pending ? "Memproses…" : "Lanjut Bayar"}
         </button>
 
         <p

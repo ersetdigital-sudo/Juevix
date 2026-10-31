@@ -2,14 +2,16 @@ import Link from "next/link";
 import { services, type Service } from "@/data/services";
 import { ServiceJsonLd } from "./json-ld";
 import { ServiceOrderForm } from "./service-order-form";
+import type { PageLinks } from "@/lib/commerce";
 import { SpriteIcon } from "./sprite-icon";
 import { cn } from "@/lib/cn";
 
 interface ServicePageProps {
   service: Service;
+  links: PageLinks;
 }
 
-export function ServicePage({ service }: ServicePageProps) {
+export function ServicePage({ service, links }: ServicePageProps) {
   return (
     <main id="main" className="flex-1">
       <section className="relative overflow-hidden border-b border-line">
@@ -62,7 +64,7 @@ export function ServicePage({ service }: ServicePageProps) {
         </div>
       </section>
 
-      <ServiceOrderForm service={service} />
+      <ServiceOrderForm service={service} links={links} />
 
       <ServiceJsonLd slug={service.slug} />
     </main>

@@ -4,22 +4,29 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import type { Service, ServiceOption } from "@/data/services";
-import { estimateTotal } from "@/lib/estimate";
+import type { PageLinks } from "@/lib/commerce";
+import { createBillCheck, createOrder } from "@/lib/db/client";
+import { toPublicError } from "@/lib/db/errors";
 import { digitsOnly, rupiah } from "@/lib/format";
 import { detectOperator } from "@/lib/operators";
+import { saveRef } from "@/lib/refs";
 import { cn } from "@/lib/cn";
 
 interface ServiceOrderFormProps {
   service: Service;
+  links: PageLinks;
 }
 
-export function ServiceOrderForm({ service }: ServiceOrderFormProps) {
+export function ServiceOrderForm({ service, links }: ServiceOrderFormProps) {
   const router = useRouter();
   const [customerId, setCustomerId] = useState("");
   const [option, setOption] = useState<ServiceOption | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [region, setRegion] = useState(service.regionSelect?.options[0] ?? "");
+  const [whatsapp, setWhatsapp] = useState("");
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
+  const [pending, setPending] = useState(false);
 
   const digits = digitsOnly(customerId);
   const productName = service.regionSelect ? region : (option?.name ?? "");
@@ -28,23 +35,21 @@ export function ServiceOrderForm({ service }: ServiceOrderFormProps) {
     [customerId, service.detectOperator],
   );
 
-  // Produk dengan harga 0 nominalnya baru diketahui setelah nomor pelanggan dicek.
-  const fixedPrice = option && option.price > 0 ? option.price : 0;
-  const estimated = digits.length > 0
-    ? estimateTotal(service.slug, digits.length, productName)
-    : 0;
-  const total = fixedPrice > 0 ? fixedPrice : estimated;
+  const optionLink = option
+    ? links.options[`${selectedGroup ?? ""}::${option.name}`]
+    : undefined;
+  const bill = Boolean(links.bill || optionLink?.bill);
+  const hasBill = Boolean(
+    links.bill || Object.values(links.options).some((item) => item.bill),
+  );
+  const total = bill ? 0 : (option?.price ?? 0);
+  const totalLabel = bill
+    ? "Cek tagihan"
+    : option
+      ? rupiah(total)
+      : "Pilih produk dulu";
 
-  const totalLabel =
-    fixedPrice > 0
-      ? rupiah(fixedPrice)
-      : digits.length > 0
-        ? rupiah(estimated)
-        : "Isi nomor dulu";
-
-  const groupedOptions = service.groups;
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!customerId.trim() || !productName) {
@@ -59,19 +64,73 @@ export function ServiceOrderForm({ service }: ServiceOrderFormProps) {
       return;
     }
 
+    const link = links.bill ?? optionLink;
+    if (!link?.serviceId) {
+      setIsError(true);
+      setMessage("Produk ini belum tersedia. Coba pilih produk lain.");
+      return;
+    }
+    if (!links.methodId) {
+      setIsError(true);
+      setMessage("Metode pembayaran belum tersedia.");
+      return;
+    }
+
     setIsError(false);
     setMessage("");
+    setPending(true);
 
-    const params = new URLSearchParams({
-      l: service.title,
-      s: service.slug,
-      no: customerId.trim(),
-      p: productName,
-      t: String(total),
-    });
+    try {
+      const baseInput: Record<string, string> = {
+        [link.inputKey]: customerId.trim(),
+      };
+      if (service.regionSelect) baseInput.wilayah = region;
+      if (option) baseInput.durasi = option.name;
 
-    router.push(`/bayar?${params.toString()}`);
-  };
+      let ref: string;
+      if (link.bill) {
+        const wa = digitsOnly(whatsapp);
+        if (wa.length < 9) {
+          setIsError(true);
+          setMessage("Isi nomor WhatsApp dulu ya (minimal 9 angka).");
+          setPending(false);
+          return;
+        }
+        const created = await createBillCheck({
+          brandSlug: links.brandSlug,
+          serviceId: link.serviceId,
+          nomorTujuan: customerId.trim(),
+          input: baseInput,
+          waPembeli: wa,
+          paymentMethodId: links.methodId,
+        });
+        ref = created.ref;
+      } else {
+        if (!link.productId) {
+          setIsError(true);
+          setMessage("Produk ini belum tersedia. Coba pilih produk lain.");
+          setPending(false);
+          return;
+        }
+        const created = await createOrder({
+          brandSlug: links.brandSlug,
+          serviceId: link.serviceId,
+          productId: link.productId,
+          nomorTujuan: customerId.trim(),
+          input: baseInput,
+          paymentMethodId: links.methodId,
+        });
+        ref = created.ref;
+      }
+
+      saveRef(ref);
+      router.push(`/bayar?ref=${encodeURIComponent(ref)}`);
+    } catch (error) {
+      setIsError(true);
+      setMessage(toPublicError(error).message);
+      setPending(false);
+    }
+  }
 
   return (
     <form
@@ -125,12 +184,34 @@ export function ServiceOrderForm({ service }: ServiceOrderFormProps) {
           </div>
         )}
 
-        {groupedOptions.map((group) => (
+        {hasBill && (
+          <div className="mt-5">
+            <label htmlFor="order-wa" className="text-sm font-semibold">
+              No. WhatsApp (untuk link bayar)
+            </label>
+            <input
+              id="order-wa"
+              name="whatsapp"
+              inputMode="numeric"
+              autoComplete="tel"
+              value={whatsapp}
+              onChange={(event) => setWhatsapp(event.target.value)}
+              className="field mt-3"
+              placeholder="0812xxxxxxxx"
+            />
+            <p className="mt-2 text-xs text-muted">
+              Nominal dan link pembayaran dikirim admin ke WhatsApp ini.
+            </p>
+          </div>
+        )}
+
+        {service.groups.map((group) => (
           <fieldset key={group.label} className="mt-6">
             <legend className="text-sm font-semibold">{group.label}</legend>
             <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
               {group.options.map((item) => {
-                const isSelected = option?.name === item.name;
+                const isSelected =
+                  selectedGroup === group.label && option?.name === item.name;
 
                 return (
                   <button
@@ -139,6 +220,7 @@ export function ServiceOrderForm({ service }: ServiceOrderFormProps) {
                     aria-pressed={isSelected}
                     onClick={() => {
                       setOption(item);
+                      setSelectedGroup(group.label);
                       setMessage("");
                     }}
                     className={cn("nom", isSelected && "is-active")}
@@ -206,14 +288,18 @@ export function ServiceOrderForm({ service }: ServiceOrderFormProps) {
 
         <button
           type="submit"
+          disabled={pending}
           className="btn mt-5 w-full justify-center"
         >
-          Lanjut Bayar
+          {pending ? "Memproses…" : "Lanjut Bayar"}
         </button>
 
         <p
           aria-live="polite"
-          className={cn("mt-3 text-center text-sm", isError ? "text-red-400" : "text-muted")}
+          className={cn(
+            "mt-3 text-center text-sm",
+            isError ? "text-red-400" : "text-muted",
+          )}
         >
           {message}
         </p>

@@ -121,7 +121,7 @@ export const products: Product[] = [
     sprite: 6,
     accent: "#0EA5E9",
     hot: false,
-    priceNote: "Mulai Rp 26.000",
+    priceNote: "Mulai Rp 51.000",
     options: [
       { label: "DANA 50.000", price: 51000 },
       { label: "GoPay 50.000", price: 51000 },

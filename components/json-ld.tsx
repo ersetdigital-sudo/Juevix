@@ -1,7 +1,8 @@
 import { faqs } from "@/data/faq";
 import { services } from "@/data/services";
 import { site, siteUrl } from "@/lib/site";
-import { ADMIN_FEE } from "@/lib/estimate";
+
+const ADMIN_FEE = 2500;
 
 type Json = Record<string, unknown>;
 

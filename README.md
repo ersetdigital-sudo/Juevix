@@ -14,6 +14,19 @@ npm start       # jalankan hasil build
 npm run lint    # ESLint
 ```
 
+## Integrasi Supabase & admin
+
+Situs ini memakai project Supabase bersama untuk semua brand:
+
+- `BRAND_SLUG=juevix-online` (brand row: Juevix, domain `juevix.id`)
+- Katalog, harga, metode bayar, QRIS, dan status transaksi dibaca dari Supabase.
+- Checkout memakai RPC `create_order` / `create_bill_check`; status dan SN dicek lewat `cek_order` / `get_payment`.
+- Dashboard admin ada di `/admin` (satu deployment dengan web), tema oranye-hitam.
+- Katalog Juevix sudah di-seed: 9 layanan, 25 produk, QRIS aktif. Metode lain bisa diaktifkan dari admin.
+- Kredensial admin ada di `.env.admin.local` (gitignored); jangan commit.
+
+Env minimum ada di `.env.example`: URL + anon key Supabase, `BRAND_SLUG`, `NEXT_PUBLIC_SITE_URL`, dan WhatsApp CS.
+
 ## Versi
 
 | Paket | Versi |
@@ -33,7 +46,8 @@ app/
   page.tsx                homepage (hero, marquee, flash sale, produk, cara, cek tagihan, FAQ)
   pln|pulsa|paket-data|   5 halaman layanan -> merender komponen ServicePage bersama
    bpjs|pdam/page.tsx
-  bayar/page.tsx          alur pembayaran + invoice/VA (noindex)
+  bayar/page.tsx          status + instruksi pembayaran dari Supabase (noindex)
+  admin/                  dashboard admin (login, transaksi, produk, voucher, pengaturan)
   syarat-ketentuan/       halaman tambahan (tidak ada di HTML asli)
   kebijakan-privasi/
   not-found.tsx           404 bermerek
@@ -43,13 +57,14 @@ app/
   fonts/                  Inter & Plus Jakarta Sans (hanya bobot yang dipakai)
 
 components/               site-header, site-footer, product-explorer, service-page,
-                          service-order-form, payment-flow, faq-accordion, reveal,
+                          service-order-form, payment-flow, check-order-form, faq-accordion, reveal,
                           marquee, live-feed, countdown, check-order-form,
                           sprite-icon, json-ld, legal-page
 
-data/                     services, products, payment-methods, faq, nav, content, legal
-lib/                      site (konfigurasi terpusat), metadata, operators, estimate,
-                          format, cn, current-year, build-date
+data/                     services, products, faq, nav, content, legal
+lib/                      site, metadata, operators, format, cn, catalog/db helpers,
+                          current-year, build-date
+modules/admin/            komponen, query, action, style dashboard admin
 
 public/images/brand/      juevix-logo.png (wordmark), og-image.png (1200x630), sprite-services.png
 public/images/operators/  telkomsel, indosat, xl, axis, smartfren
@@ -79,8 +94,8 @@ Tidak perlu menyentuh komponen.
 1. **`NEXT_PUBLIC_SITE_URL`** — domain final (default `https://juevix.id`). Dipakai untuk canonical, OG, sitemap, robots.
 2. **`NEXT_PUBLIC_WHATSAPP`** — nomor CS format `62812xxxxxxx`. Selama kosong, tombol WhatsApp tidak dirender.
 3. **Email CS** — `NEXT_PUBLIC_EMAIL`. Sama, tidak dirender bila kosong.
-4. **Alur pembayaran** — `components/payment-flow.tsx` masih simulasi (VA/QRIS dibuat lokal). Sambungkan ke PPOB/biller API asli.
-5. **Estimasi tagihan** — `lib/estimate.ts` memakai tarif contoh untuk PLN pascabayar & PDAM.
+4. **Metode pembayaran** — hanya QRIS yang aktif. Aktifkan metode lain dari admin jika kanal pembayarannya sudah tersedia.
+5. **Nominal tagihan** — tagihan PLN/PDAM/BPJS/internet/cicilan menunggu admin mengisi nominal; tidak ada estimasi lokal.
 6. **Teks legal** — `data/legal.ts` (syarat & kebijakan privasi) adalah draf, minta review sebelum publikasi.
 7. **Aset merek** — `public/images/brand/juevix-logo.png` (wordmark) dan `og-image.png` dibuat dari mark
    squircle gradien + "J" dan bisa diganti aset resmi. Mark di `app/icon.svg` dipakai sebagai favicon.
@@ -94,6 +109,6 @@ Tidak perlu menyentuh komponen.
 
 ## Catatan teknis
 
-- `cacheComponents` & `partialPrefetching` aktif → `new Date()` dilarang saat prerender;
-  dipakai helper `"use cache"` (`lib/current-year.ts`, `lib/build-date.ts`).
+- Halaman publik memakai cache data ±60 detik; halaman admin dan pembayaran selalu live.
+- Cek transaksi memakai RPC `cek_order`; kode referensi berformat `JVX-YYMMDD-XXXXXX`.
 - `npm audit` melaporkan 5 high severity dari scaffold bawaan (belum ditangani).
